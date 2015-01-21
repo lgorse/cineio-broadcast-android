@@ -53,6 +53,8 @@ import io.cine.android.streaming.FFmpegMuxer;
 import io.cine.android.streaming.MicrophoneEncoder;
 import io.cine.android.streaming.Muxer;
 import io.cine.android.streaming.TextureMovieEncoder;
+import twitter4j.conf.ConfigurationBuilder;
+
 
 /**
  * Shows the camera preview on screen while simultaneously recording it to a .mp4 file.
@@ -222,6 +224,7 @@ public class BroadcastActivity extends Activity
         }
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, text);
         test_list.setAdapter(adapter);
+
 
         toggleRecording.setOnTouchListener(new View.OnTouchListener() {
             @Override
