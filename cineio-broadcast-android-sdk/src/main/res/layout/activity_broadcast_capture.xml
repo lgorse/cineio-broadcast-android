@@ -39,4 +39,13 @@
     <include layout="@layout/status" />
 
     <include layout="@layout/camera_button_holder" />
+
+    <ListView android:id="@id/android:list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawSelectorOnTop="false"
+        android:alpha="0.5"
+        />
+
 </RelativeLayout>

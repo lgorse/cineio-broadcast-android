@@ -34,11 +34,14 @@ import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.cine.android.streaming.AspectFrameLayout;
@@ -144,6 +147,11 @@ public class BroadcastActivity extends Activity
     private EncodingConfig mEncodingConfig;
     private String requestedCamera;
 
+    private ListView test_list;
+    private ArrayAdapter adapter;
+    private ArrayList<String> text = new ArrayList<String>();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -205,8 +213,15 @@ public class BroadcastActivity extends Activity
         mAudioConfig = AudioEncoderConfig.createDefaultProfile();
         mEncodingConfig.setAudioEncoderConfig(mAudioConfig);
         mAudioEncoder = new MicrophoneEncoder(mMuxer);
+
         // http://stackoverflow.com/questions/5975168/android-button-setpressed-after-onclick
         Button toggleRecording = (Button) findViewById(R.id.toggleRecording_button);
+        test_list = (ListView) findViewById(android.R.id.list);
+        for (int i =0; i<2;i++){
+            text.add("hi "+i);
+        }
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, text);
+        test_list.setAdapter(adapter);
 
         toggleRecording.setOnTouchListener(new View.OnTouchListener() {
             @Override
