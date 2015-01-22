@@ -39,6 +39,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterSession;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -53,7 +58,21 @@ import io.cine.android.streaming.FFmpegMuxer;
 import io.cine.android.streaming.MicrophoneEncoder;
 import io.cine.android.streaming.Muxer;
 import io.cine.android.streaming.TextureMovieEncoder;
-
+import io.fabric.sdk.android.Fabric;
+import twitter4j.DirectMessage;
+import twitter4j.FilterQuery;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.StallWarning;
+import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.User;
+import twitter4j.UserList;
+import twitter4j.UserStreamListener;
+import twitter4j.conf.ConfigurationBuilder;
 
 
 /**
@@ -151,7 +170,19 @@ public class BroadcastActivity extends Activity
 
     private ListView test_list;
     private ArrayAdapter adapter;
-    private ArrayList<String> text = new ArrayList<String>();
+    private ArrayList<String> tweets = new ArrayList<String>();
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+
+    private String mTtoken;
+    private String mSecret;
+    private TwitterStream twitterStream;
+    private final QueryResult[] result = {null};
+
+    private Handler handler = new Handler();
+    private FilterQuery query;
+    private static final String TWITTER_KEY = "swJpC3MFtmrh6JsL9TwnKjTXv";
+    private static final String TWITTER_SECRET = "XJaT1LTCZnBdqzTKN1BtELTGchRKyPSOmuqdnzMVPqWzgdJAru";
 
 
     @Override
@@ -218,14 +249,153 @@ public class BroadcastActivity extends Activity
 
         // http://stackoverflow.com/questions/5975168/android-button-setpressed-after-onclick
         Button toggleRecording = (Button) findViewById(R.id.toggleRecording_button);
+
+//Need to clean this code as it is redundant with Twitter4j ConfigurationBuilder
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
+
         test_list = (ListView) findViewById(android.R.id.list);
-        for (int i =0; i<2;i++){
-            text.add("hi "+i);
-        }
-        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, text);
+        TwitterSession session =
+                Twitter.getSessionManager().getActiveSession();
+        TwitterAuthToken authToken = session.getAuthToken();
+        mTtoken = authToken.token;
+        mSecret = authToken.secret;
+
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, tweets);
         test_list.setAdapter(adapter);
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true)
+                .setOAuthConsumerKey(TWITTER_KEY)
+                .setOAuthConsumerSecret(TWITTER_SECRET)
+                .setOAuthAccessToken(mTtoken)
+                .setOAuthAccessTokenSecret(mSecret);
+        UserStreamListener listener = new UserStreamListener(){
 
+            @Override
+            public void onStatus(Status status) {
+                System.out.println(status.getUser().getName() + " : " + status.getText());
+                Log.i("STATUS", status.getUser().getName() + " : " + status.getText());
+                adapter.insert(status.getText(), 0);
+                adapter.notifyDataSetChanged();
+                System.out.println("LAST ARRAY ENTRY" + tweets.get(tweets.size()-1));
+            }
 
+            @Override
+            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+
+            }
+
+            @Override
+            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+
+            }
+
+            @Override
+            public void onScrubGeo(long userId, long upToStatusId) {
+
+            }
+
+            @Override
+            public void onStallWarning(StallWarning warning) {
+
+            }
+
+            @Override
+            public void onDeletionNotice(long directMessageId, long userId) {
+
+            }
+
+            @Override
+            public void onFriendList(long[] friendIds) {
+
+            }
+
+            @Override
+            public void onFavorite(User source, User target, Status favoritedStatus) {
+
+            }
+
+            @Override
+            public void onUnfavorite(User source, User target, Status unfavoritedStatus) {
+
+            }
+
+            @Override
+            public void onFollow(User source, User followedUser) {
+
+            }
+
+            @Override
+            public void onUnfollow(User source, User unfollowedUser) {
+
+            }
+
+            @Override
+            public void onDirectMessage(DirectMessage directMessage) {
+
+            }
+
+            @Override
+            public void onUserListMemberAddition(User addedMember, User listOwner, UserList list) {
+
+            }
+
+            @Override
+            public void onUserListMemberDeletion(User deletedMember, User listOwner, UserList list) {
+
+            }
+
+            @Override
+            public void onUserListSubscription(User subscriber, User listOwner, UserList list) {
+
+            }
+
+            @Override
+            public void onUserListUnsubscription(User subscriber, User listOwner, UserList list) {
+
+            }
+
+            @Override
+            public void onUserListCreation(User listOwner, UserList list) {
+
+            }
+
+            @Override
+            public void onUserListUpdate(User listOwner, UserList list) {
+
+            }
+
+            @Override
+            public void onUserListDeletion(User listOwner, UserList list) {
+
+            }
+
+            @Override
+            public void onUserProfileUpdate(User updatedUser) {
+
+            }
+
+            @Override
+            public void onBlock(User source, User blockedUser) {
+
+            }
+
+            @Override
+            public void onUnblock(User source, User unblockedUser) {
+
+            }
+
+            @Override
+            public void onException(Exception ex) {
+
+            }
+        };
+        query = new FilterQuery();
+        String keywords[] = {"#Ferguson"};
+        query.track(keywords);
+        twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
+        twitterStream.addListener(listener);
+        twitterStream.filter(query);
         toggleRecording.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
