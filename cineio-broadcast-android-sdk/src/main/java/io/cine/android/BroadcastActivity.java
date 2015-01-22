@@ -53,7 +53,7 @@ import io.cine.android.streaming.FFmpegMuxer;
 import io.cine.android.streaming.MicrophoneEncoder;
 import io.cine.android.streaming.Muxer;
 import io.cine.android.streaming.TextureMovieEncoder;
-import twitter4j.conf.ConfigurationBuilder;
+
 
 
 /**
