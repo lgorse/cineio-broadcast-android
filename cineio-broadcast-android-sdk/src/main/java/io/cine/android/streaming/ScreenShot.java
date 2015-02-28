@@ -212,7 +212,7 @@ public class ScreenShot {
             m.postRotate(180);
             bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, m, false);
             bmp.compress(Bitmap.CompressFormat.PNG, 50, bos);
-            MediaStore.Images.Media.insertImage(context.getContentResolver(), bmp, fileName, "");
+         setImageInMediaStore(bmp);
             bmp.recycle();
             Log.i("time elapsed", String.valueOf(System.currentTimeMillis() - startTime) + " milliseconds");
         }catch (IOException e){
@@ -227,6 +227,10 @@ public class ScreenShot {
         }
         Log.d(TAG, "Saved " + width + "x" + height + " frame as '" + getFilePath() + "'");
 
+    }
+
+    protected void setImageInMediaStore(Bitmap bmp){
+        MediaStore.Images.Media.insertImage(context.getContentResolver(), bmp, fileName, "");
     }
 
 
