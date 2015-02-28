@@ -1,10 +1,13 @@
 package io.cine.android.streaming;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.opengl.GLES20;
 import android.os.Environment;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
@@ -37,35 +40,40 @@ public class ScreenShot {
     private String prefix;
     private BroadcastActivity.CameraHandler mCameraHandler;
     private File screenShotFile;
+    private Context context;
+    private String fileName;
 
     public static final int SAVING_FRAME = 0;
     public static final int SAVED_FRAME = 1;
     public static final int FAILED_FRAME = 2;
 
     //Basic screenshot: just give us the CameraHandler, we'll do the rest
-    public ScreenShot(BroadcastActivity.CameraHandler mCameraHandler){
+    public ScreenShot(BroadcastActivity.CameraHandler mCameraHandler, Context context){
         this.scale = 1f;
         this.prefix = "";
         this.fileFolder =  Environment.getExternalStorageDirectory() + "/cineio/" ;
         this.mCameraHandler = mCameraHandler;
+        this.context = context;
         initiateDirectory();
     }
 
     //Screenshot with all variables defined
-    public ScreenShot(BroadcastActivity.CameraHandler mCameraHandler, float scale, String filePath, String prefix){
+    public ScreenShot(BroadcastActivity.CameraHandler mCameraHandler, Context context, float scale, String filePath, String prefix){
         this.scale = scale;
         this.fileFolder = Environment.getExternalStorageDirectory() + "/" + filePath + "/";
         this.prefix = prefix;
         this.mCameraHandler = mCameraHandler;
+        this.context = context;
         initiateDirectory();
     }
 
     //Screenshot without the prefix (perhaps not required by the user)
-    public ScreenShot(BroadcastActivity.CameraHandler mCameraHandler, float scale, String filePath){
+    public ScreenShot(BroadcastActivity.CameraHandler mCameraHandler, Context context, float scale, String filePath){
         this.scale = scale;
         this.fileFolder = Environment.getExternalStorageDirectory() + "/" + filePath + "/";
         this.prefix = "";
         this.mCameraHandler = mCameraHandler;
+        this.context = context;
         initiateDirectory();
     }
 
@@ -77,7 +85,8 @@ public class ScreenShot {
 
     //Generates the full File. Useful to get the full filepath of the Bitmap
     public void setScreenShotFile(){
-        this.screenShotFile = new File(fileFolder, prefix + System.currentTimeMillis() + ".png");
+        this.fileName = prefix + System.currentTimeMillis() + ".png";
+        this.screenShotFile = new File(fileFolder, fileName);
         setFilePath(this.screenShotFile.toString());
     }
 
@@ -203,6 +212,7 @@ public class ScreenShot {
             m.postRotate(180);
             bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, m, false);
             bmp.compress(Bitmap.CompressFormat.PNG, 50, bos);
+            MediaStore.Images.Media.insertImage(context.getContentResolver(), bmp, fileName, "");
             bmp.recycle();
             Log.i("time elapsed", String.valueOf(System.currentTimeMillis() - startTime) + " milliseconds");
         }catch (IOException e){
@@ -218,6 +228,8 @@ public class ScreenShot {
         Log.d(TAG, "Saved " + width + "x" + height + " frame as '" + getFilePath() + "'");
 
     }
+
+
 
 
 }

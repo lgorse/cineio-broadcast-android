@@ -172,8 +172,6 @@ public class EglSurfaceBase {
         if (!mEglCore.isCurrent(mEGLSurface)) {
             throw new RuntimeException("Expected EGL context/surface is not current");
         }
-
-
         int width = getWidth();
         int height = getHeight();
         ByteBuffer buf = ByteBuffer.allocateDirect(width * height * 4);
@@ -186,6 +184,8 @@ public class EglSurfaceBase {
         saveBitmap.run();
 
     }
+
+
 
     private static class SaveBitmapRunnable implements Runnable{
         private final ByteBuffer buf;
