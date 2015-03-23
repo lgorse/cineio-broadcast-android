@@ -655,7 +655,7 @@ public class BroadcastActivity extends Activity
      * The object is created on the UI thread, and all handlers run there.  Messages are
      * sent from other threads, using sendMessage().
      */
-    public static class CameraHandler extends Handler {
+    public static class CameraHandler extends io.cine.android.CameraHandler {
         public static final int MSG_SET_SURFACE_TEXTURE = 0;
         public static final int MSG_SURFACE_CHANGED = 1;
         public static final int MSG_CAPTURE_FRAME = 2;

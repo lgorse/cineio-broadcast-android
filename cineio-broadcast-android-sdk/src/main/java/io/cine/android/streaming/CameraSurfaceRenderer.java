@@ -10,6 +10,8 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import io.cine.android.BroadcastActivity;
+import io.cine.android.BroadcastFragment;
+import io.cine.android.CameraHandler;
 import io.cine.android.streaming.gles.FullFrameRect;
 import io.cine.android.streaming.gles.Texture2dProgram;
 
@@ -29,7 +31,7 @@ public class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
 
     private final Muxer mMuxer;
     private final float[] mSTMatrix = new float[16];
-    private BroadcastActivity.CameraHandler mCameraHandler;
+    private CameraHandler mCameraHandler;
     private TextureMovieEncoder mVideoEncoder;
     private FullFrameRect mFullScreen;
     private int mTextureId;
@@ -53,7 +55,7 @@ public class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
      * @param movieEncoder  video encoder object
      * @param muxer         output file for encoded video; forwarded to movieEncoder
      */
-    public CameraSurfaceRenderer(BroadcastActivity.CameraHandler cameraHandler,
+    public CameraSurfaceRenderer(CameraHandler cameraHandler,
                                  TextureMovieEncoder movieEncoder, Muxer muxer) {
         mCameraHandler = cameraHandler;
         mVideoEncoder = movieEncoder;
