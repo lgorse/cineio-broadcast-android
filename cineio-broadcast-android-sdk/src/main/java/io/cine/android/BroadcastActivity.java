@@ -656,9 +656,7 @@ public class BroadcastActivity extends Activity
      * sent from other threads, using sendMessage().
      */
     public static class CameraHandler extends io.cine.android.CameraHandler {
-        public static final int MSG_SET_SURFACE_TEXTURE = 0;
-        public static final int MSG_SURFACE_CHANGED = 1;
-        public static final int MSG_CAPTURE_FRAME = 2;
+
 
         // Weak reference to the Activity; only access this from the UI thread.
         private WeakReference<BroadcastActivity> mWeakActivity;

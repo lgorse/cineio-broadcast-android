@@ -48,7 +48,7 @@ import io.cine.android.streaming.TextureMovieEncoder;
  * Use the {@link BroadcastFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BroadcastFragment extends Fragment implements  EncodingConfig.EncodingCallback, SurfaceTexture.OnFrameAvailableListener {
+public class BroadcastFragment extends android.support.v4.app.Fragment implements  EncodingConfig.EncodingCallback, SurfaceTexture.OnFrameAvailableListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -78,6 +78,8 @@ public class BroadcastFragment extends Fragment implements  EncodingConfig.Encod
     private String requestedCamera;
     private View broadcastView;
     Bundle extras;
+
+    private Button recordingButton;
 
     /**
      * Use this factory method to create a new instance of
@@ -171,15 +173,14 @@ public class BroadcastFragment extends Fragment implements  EncodingConfig.Encod
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-       // activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                     + " must implement OnFragmentInteractionListener");
-        }
+//        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        try {
+//            mListener = (OnFragmentInteractionListener) activity;
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString()
+//                     + " must implement OnFragmentInteractionListener");
+//        }
     }
 
     @Override

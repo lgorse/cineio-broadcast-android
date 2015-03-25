@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import io.cine.android.BroadcastActivity;
+import io.cine.android.CameraHandler;
 import io.cine.android.streaming.gles.GlUtil;
 
 /**
@@ -38,7 +39,7 @@ public class ScreenShot {
     private String filePath;
     private String fileFolder;
     private String prefix;
-    private BroadcastActivity.CameraHandler mCameraHandler;
+    private CameraHandler mCameraHandler;
     private File screenShotFile;
     private Context context;
     private String fileName;
@@ -48,7 +49,7 @@ public class ScreenShot {
     public static final int FAILED_FRAME = 2;
 
     //Basic screenshot: just give us the CameraHandler, we'll do the rest
-    public ScreenShot(BroadcastActivity.CameraHandler mCameraHandler, Context context){
+    public ScreenShot(CameraHandler mCameraHandler, Context context){
         this.scale = 1f;
         this.prefix = "";
         this.fileFolder =  Environment.getExternalStorageDirectory() + "/cineio/" ;
@@ -58,7 +59,7 @@ public class ScreenShot {
     }
 
     //Screenshot with all variables defined
-    public ScreenShot(BroadcastActivity.CameraHandler mCameraHandler, Context context, float scale, String filePath, String prefix){
+    public ScreenShot(CameraHandler mCameraHandler, Context context, float scale, String filePath, String prefix){
         this.scale = scale;
         this.fileFolder = Environment.getExternalStorageDirectory() + "/" + filePath + "/";
         this.prefix = prefix;
@@ -68,7 +69,7 @@ public class ScreenShot {
     }
 
     //Screenshot without the prefix (perhaps not required by the user)
-    public ScreenShot(BroadcastActivity.CameraHandler mCameraHandler, Context context, float scale, String filePath){
+    public ScreenShot(CameraHandler mCameraHandler, Context context, float scale, String filePath){
         this.scale = scale;
         this.fileFolder = Environment.getExternalStorageDirectory() + "/" + filePath + "/";
         this.prefix = "";
@@ -121,7 +122,7 @@ public class ScreenShot {
     public String getFileFolder(){return this.fileFolder;}
 
     //Turns out we need to get the camerahandler in order to send messages to it
-    public BroadcastActivity.CameraHandler getmCameraHandler(){
+    public CameraHandler getmCameraHandler(){
         return this.mCameraHandler;
     }
 

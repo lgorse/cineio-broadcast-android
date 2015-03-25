@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -121,42 +122,39 @@ public class CineIoClient {
             }
 
         });
+
+
     }
 
-    public void broadcastFragment(String id, final BroadcastConfig config,  final Context context, final BroadcastFragment broadcastFragment, final int host){
+    public void initializeBroadcast(String id, final BroadcastConfig config, final Context context, final Class<? extends Activity> activity){
+        final Intent intent = new Intent(context, activity);
 
-        final Activity activity = (Activity) context;
-        getStream(id, new StreamResponseHandler() {
+        getStream(id, new StreamResponseHandler(){
             public void onSuccess(Stream stream) {
                 // Log.d(TAG, "Starting publish intent: " + stream.getId());
-                Bundle args = new Bundle();
-                args.putString("PUBLISH_URL", stream.getPublishUrl());
-                if (config.getWidth() != -1) {
-                    args.putInt("WIDTH", config.getWidth());
+                intent.putExtra("PUBLISH_URL", stream.getPublishUrl());
+                if(config.getWidth() != -1){
+                    intent.putExtra("WIDTH", config.getWidth());
                 }
-                if (config.getHeight() != -1) {
-                    args.putInt("HEIGHT", config.getHeight());
+                if(config.getHeight() != -1){
+                    intent.putExtra("HEIGHT", config.getHeight());
                 }
-                if (config.getLockedOrientation() != null) {
-                    args.putString("ORIENTATION", config.getLockedOrientation());
+                if(config.getLockedOrientation() != null){
+                    intent.putExtra("ORIENTATION", config.getLockedOrientation());
                 }
-                if (config.getRequestedCamera() != null) {
-                    args.putString("CAMERA", config.getRequestedCamera());
+                if(config.getRequestedCamera() != null){
+                    intent.putExtra("CAMERA", config.getRequestedCamera());
                 }
-                if (config.getBroadcastActivityLayout() != -1) {
-                    args.putInt("LAYOUT", config.getBroadcastActivityLayout());
+                if (config.getBroadcastActivityLayout() != -1){
+                    intent.putExtra("LAYOUT", config.getBroadcastActivityLayout());
                 }
-                broadcastFragment.setArguments(args);
-                if (activity.getFragmentManager().findFragmentByTag("broadcastfragment") == null) {
-                    FragmentManager fragmentManager = activity.getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.add(host, broadcastFragment, "broadcastfragment");
-                    fragmentTransaction.commit();
-                }
+                context.startActivity(intent);
             }
 
         });
+
     }
+
 
     public void play(String id, final Context context){
 
