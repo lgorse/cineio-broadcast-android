@@ -269,6 +269,10 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
         }
     }
 
+    public boolean isRecording(){
+        return  mRecordingEnabled;
+    }
+
     private void startRecording() {
         mRecordingEnabled = true;
         mMuxer.prepare(mEncodingConfig);
