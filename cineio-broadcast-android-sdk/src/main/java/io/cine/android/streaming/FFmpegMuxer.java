@@ -241,7 +241,7 @@ public class FFmpegMuxer extends Muxer implements Runnable {
                 if (formatRequiresBuffering()) {
                     encodedData.clear();
                     synchronized (mMuxerInputQueue) {
-                        mMuxerInputQueue.get(trackIndex).add(encodedData);
+                            mMuxerInputQueue.get(trackIndex).add(encodedData);
                     }
                 } else {
                     encoder.releaseOutputBuffer(bufferIndex, false);

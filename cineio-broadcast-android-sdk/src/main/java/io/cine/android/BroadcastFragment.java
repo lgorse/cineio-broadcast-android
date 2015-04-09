@@ -121,6 +121,7 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
         // Inflate the layout for this fragment
         int layout = extras.getInt("LAYOUT", R.layout.fragment_broadcast_layout);
         broadcastView = inflater.inflate(layout, container, false);
+        //broadcastView.setKeepScreenOn(true);
         initializeEncodingConfig(extras);
         initializeMuxer();
         initializeAudio();
@@ -219,6 +220,7 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
         super.onDestroy();
         mCameraHandler.invalidateHandler();     // paranoia
     }
+
 
 
     @Override
