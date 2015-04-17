@@ -256,7 +256,12 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
      */
     private void updateControls() {
         Button recordingButton = (Button) broadcastView.findViewById(R.id.toggleRecording_button);
-        recordingButton.setPressed(mRecordingEnabled);
+       // recordingButton.setPressed(mRecordingEnabled);
+        if (mRecordingEnabled){
+            recordingButton.setBackgroundResource(R.drawable.shutter_button_pressed);
+        }else {
+            recordingButton.setBackgroundResource(R.drawable.shutter_button_default);
+        }
     }
 
     /**
