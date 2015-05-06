@@ -5,9 +5,10 @@
     <dimen name="activity_vertical_margin">0dp</dimen>
     <dimen name="item_padding">12dp</dimen>
     <dimen name="ring_size">72dp</dimen>
-    <dimen name="ring_width">6dip</dimen>
+    <dimen name="ring_width">2dip</dimen>
     <dimen name="square_corner_radius">8dip</dimen>
-    <dimen name="red_circle_padding">8dip</dimen>
+    <dimen name="red_circle_padding">6dip</dimen>
     <dimen name="red_square_padding">16dip</dimen>
+
 
 </resources>

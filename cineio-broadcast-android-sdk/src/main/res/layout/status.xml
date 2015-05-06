@@ -11,7 +11,11 @@
         android:layout_marginLeft="@dimen/item_padding"
         android:layout_marginTop="@dimen/item_padding"
         android:text="Ready"
-        android:textColor="@color/yellow"
+        android:shadowColor="@color/black"
+        android:shadowRadius="3"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:textColor="@color/status_color"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>
