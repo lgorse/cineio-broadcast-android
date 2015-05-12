@@ -107,8 +107,8 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+           // mParam1 = getArguments().getString(ARG_PARAM1);
+          //  mParam2 = getArguments().getString(ARG_PARAM2);
             extras = getArguments();
         }
 
