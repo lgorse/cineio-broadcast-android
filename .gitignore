@@ -31,3 +31,5 @@ Thumbs.db
 .gradle
 build/
 ignored/
+
+cineio-broadcast-android-sdk/cineio-broadcast-android-sdk.iml
