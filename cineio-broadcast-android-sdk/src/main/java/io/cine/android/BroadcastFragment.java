@@ -1,7 +1,6 @@
 package io.cine.android;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
@@ -11,7 +10,6 @@ import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +17,6 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
@@ -133,9 +130,13 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // show interest in events resulting from ACTION_DOWN
-                if(event.getAction()==MotionEvent.ACTION_DOWN) return true;
+                if(event.getAction()==MotionEvent.ACTION_DOWN)
+                    return true;
+
                 // don't handle event unless its ACTION_UP so "doSomething()" only runs once.
-                if(event.getAction()!=MotionEvent.ACTION_UP) return false;
+                if(event.getAction()!=MotionEvent.ACTION_UP)
+                    return false;
+
                 toggleRecordingHandler();
                 return true;
             }
@@ -189,7 +190,7 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
         Log.d(TAG, "onPause -- releasing camera");
         super.onPause();
         if (mRecordingEnabled) {
-            stopRecording();
+            toggleRecordingHandler();
         }
         releaseCamera();
         mGLView.queueEvent(new Runnable() {
@@ -301,7 +302,7 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
                 mRenderer.changeRecordingState(mRecordingEnabled);
             }
         });
-        updateControls();
+        //updateControls();
     }
 
 
@@ -473,7 +474,6 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
             @Override
             public void run() {
 
-
                 TextView fileText = (TextView) broadcastView.findViewById(R.id.streamingStatus);
                 String statusText;
                 switch (muxerState) {
@@ -507,7 +507,23 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                updateControls();
+
+                Button recordingButton = (Button) broadcastView.findViewById(R.id.toggleRecording_button);
+
                 switch (muxerState) {
+                    case PREPARING:
+                        recordingButton.setVisibility(View.GONE);
+                        break;
+
+                    case READY:
+                        break;
+
+                    case STREAMING:
+                        recordingButton.setVisibility(View.VISIBLE);
+                        break;
+
                     case CONNECTING:
                         int currentOrientation = getResources().getConfiguration().orientation;
                         if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -515,8 +531,12 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
                         } else {
                             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
                         }
+
+                        recordingButton.setVisibility(View.GONE);
                         break;
+
                     case SHUTDOWN:
+                        recordingButton.setVisibility(View.VISIBLE);
                         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                         break;
                 }
