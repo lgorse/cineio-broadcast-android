@@ -35,6 +35,7 @@ public class FFmpegMuxer extends Muxer implements Runnable {
     private final int profile = 2;              // AAC LC
     // Queue encoded buffers when muxing to stream
     ArrayList<ArrayDeque<ByteBuffer>> mMuxerInputQueue;
+    private int mBufferCount; // TODO: Utilize the queue size. This is a hack for now
     private boolean mReady;                             // Is muxing thread ready
     private boolean mRunning;                           // Is muxer thread running
     private FFmpegHandler mHandler;
@@ -97,6 +98,7 @@ public class FFmpegMuxer extends Muxer implements Runnable {
         if (formatRequiresBuffering()) {
             mHandler.sendMessage(mHandler.obtainMessage(MSG_ADD_TRACK, trackFormat));
             synchronized (mMuxerInputQueue) {
+                mBufferCount = 0;
                 while (mMuxerInputQueue.size() < trackIndex + 1)
                     mMuxerInputQueue.add(new ArrayDeque<ByteBuffer>());
             }
@@ -147,19 +149,34 @@ public class FFmpegMuxer extends Muxer implements Runnable {
                     // Copy encodedData into another ByteBuffer, recycling if possible
                     Log.i("THIS IS THE ENCODED DATA", encodedData.toString());
                     Log.i("THIS IS THE TRACK INDEX", String.valueOf(trackIndex));
+
                     synchronized (mMuxerInputQueue) {
+                        if (trackIndex == mVideoTrackIndex) {
+                            mBufferCount++;
+                            Log.d(TAG, "mBufferCount = " + mBufferCount);
+                        }
                         muxerInput = mMuxerInputQueue.get(trackIndex).isEmpty() ?
-                                ByteBuffer.allocateDirect(encodedData.capacity()) : mMuxerInputQueue.get(trackIndex).remove();
+                                ByteBuffer.allocateDirect(encodedData.capacity()) :
+                                mMuxerInputQueue.get(trackIndex).remove();
                     }
-                    muxerInput.put(encodedData);
-                    muxerInput.position(0);
-                    encoder.releaseOutputBuffer(bufferIndex, false);
-                    mHandler.sendMessage(mHandler.obtainMessage(MSG_WRITE_FRAME,
-                            new WritePacketData(encoder, trackIndex, bufferIndex, muxerInput, bufferInfo)));
+
+                    if (mBufferCount > 60) { // TODO: Limit by memory footprint not buffer count
+                        Log.w(TAG, "Dropping frame because the queue is FULL!");
+                        releaseOutputBufer(encoder, encodedData, bufferIndex, trackIndex);
+                        if (formatRequiresBuffering())
+                            encoder.releaseOutputBuffer(bufferIndex, false);
+                    }
+                    else {
+                        muxerInput.put(encodedData);
+                        muxerInput.position(0);
+
+                        encoder.releaseOutputBuffer(bufferIndex, false);
+                        mHandler.sendMessage(mHandler.obtainMessage(MSG_WRITE_FRAME,
+                                new WritePacketData(encoder, trackIndex, bufferIndex, muxerInput, bufferInfo)));
+                    }
                 } else {
                     handleWriteSampleData(encoder, trackIndex, bufferIndex, encodedData, bufferInfo);
                 }
-
             } else {
                 Log.w(TAG, "Dropping frame because Muxer not ready!");
                 releaseOutputBufer(encoder, encodedData, bufferIndex, trackIndex);
@@ -241,13 +258,19 @@ public class FFmpegMuxer extends Muxer implements Runnable {
                 if (formatRequiresBuffering()) {
                     encodedData.clear();
                     synchronized (mMuxerInputQueue) {
-                            mMuxerInputQueue.get(trackIndex).add(encodedData);
+                        mMuxerInputQueue.get(trackIndex).add(encodedData);
+
+                        if (trackIndex == mVideoTrackIndex) {
+                            mBufferCount = Math.max(mBufferCount - 1, 0);
+                            Log.d(TAG, "releaseOutputBufer: mBufferCount = " + mBufferCount);
+                        }
                     }
                 } else {
                     encoder.releaseOutputBuffer(bufferIndex, false);
                 }
             }
         }
+
     }
 
     /**
