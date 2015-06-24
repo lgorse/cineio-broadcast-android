@@ -514,14 +514,14 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
 
                 switch (muxerState) {
                     case PREPARING:
-                        recordingButton.setVisibility(View.GONE);
+                        recordingButton.setEnabled(false);
                         break;
 
                     case READY:
                         break;
 
                     case STREAMING:
-                        recordingButton.setVisibility(View.VISIBLE);
+                        recordingButton.setEnabled(true);
                         break;
 
                     case CONNECTING:
@@ -532,11 +532,11 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
                             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
                         }
 
-                        recordingButton.setVisibility(View.GONE);
+                        recordingButton.setEnabled(false);
                         break;
 
                     case SHUTDOWN:
-                        recordingButton.setVisibility(View.VISIBLE);
+                        recordingButton.setEnabled(true);
                         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                         break;
                 }
