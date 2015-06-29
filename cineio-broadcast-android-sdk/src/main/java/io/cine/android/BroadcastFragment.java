@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -511,10 +512,12 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
                 updateControls();
 
                 Button recordingButton = (Button) broadcastView.findViewById(R.id.toggleRecording_button);
+                RelativeLayout recordingButtonLayout = (RelativeLayout) broadcastView.findViewById(R.id.camera_button_holder);
 
                 switch (muxerState) {
                     case PREPARING:
                         recordingButton.setEnabled(false);
+                        recordingButtonLayout.setVisibility(View.GONE);
                         break;
 
                     case READY:
@@ -522,6 +525,7 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
 
                     case STREAMING:
                         recordingButton.setEnabled(true);
+                        recordingButtonLayout.setVisibility(View.VISIBLE);
                         break;
 
                     case CONNECTING:
@@ -533,10 +537,12 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
                         }
 
                         recordingButton.setEnabled(false);
+                        recordingButtonLayout.setVisibility(View.GONE);
                         break;
 
                     case SHUTDOWN:
                         recordingButton.setEnabled(true);
+                        recordingButtonLayout.setVisibility(View.VISIBLE);
                         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                         break;
                 }
