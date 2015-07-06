@@ -193,6 +193,13 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
         if (mRecordingEnabled) {
             toggleRecordingHandler();
         }
+
+        // TODO: this is a hack. The line below makes the video
+        // stream to shutdown. The audio stream finished normally
+        // Need to figure out how to stop streaming when going to
+        // background
+        mMuxer.signalEndOfTrack();
+
         releaseCamera();
         mGLView.queueEvent(new Runnable() {
             @Override
@@ -203,6 +210,7 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
         });
         mGLView.onPause();
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getActivity().finish();
         Log.d(TAG, "onPause complete");
     }
 
@@ -471,83 +479,86 @@ public class BroadcastFragment extends android.support.v4.app.Fragment implement
     }
 
     private void updateStatusText(final EncodingConfig.MUXER_STATE muxerState){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
 
-                TextView fileText = (TextView) broadcastView.findViewById(R.id.streamingStatus);
-                String statusText;
-                switch (muxerState) {
-                    case PREPARING:
-                        statusText = "Preparing";
-                        break;
-                    case CONNECTING:
-                        statusText = "Connecting";
-                        break;
-                    case READY:
-                        statusText = "Ready";
-                        break;
-                    case STREAMING:
-                        statusText = "Streaming";
-                        break;
-                    case SHUTDOWN:
-                        statusText = "Ready";
-                        break;
-                    default:
-                        statusText = "Unknown";
-                        break;
+                    TextView fileText = (TextView) broadcastView.findViewById(R.id.streamingStatus);
+                    String statusText;
+                    switch (muxerState) {
+                        case PREPARING:
+                            statusText = "Preparing";
+                            break;
+                        case CONNECTING:
+                            statusText = "Connecting";
+                            break;
+                        case READY:
+                            statusText = "Ready";
+                            break;
+                        case STREAMING:
+                            statusText = "Streaming";
+                            break;
+                        case SHUTDOWN:
+                            statusText = "Ready";
+                            break;
+                        default:
+                            statusText = "Unknown";
+                            break;
+                    }
+                    fileText.setText(statusText);
+
                 }
-                fileText.setText(statusText);
-
-            }
-        });
-
+            });
+        }
     }
 
     private void handleStreamingUpdate(final EncodingConfig.MUXER_STATE muxerState) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
 
-                updateControls();
+                    updateControls();
 
-                Button recordingButton = (Button) broadcastView.findViewById(R.id.toggleRecording_button);
-                RelativeLayout recordingButtonLayout = (RelativeLayout) broadcastView.findViewById(R.id.camera_button_holder);
+                    Button recordingButton = (Button) broadcastView.findViewById(R.id.toggleRecording_button);
+                    RelativeLayout recordingButtonLayout = (RelativeLayout) broadcastView.findViewById(R.id.camera_button_holder);
 
-                switch (muxerState) {
-                    case PREPARING:
-                        recordingButton.setEnabled(false);
-                        recordingButtonLayout.setVisibility(View.GONE);
-                        break;
+                    switch (muxerState) {
+                        case PREPARING:
+                            recordingButton.setEnabled(false);
+                            recordingButtonLayout.setVisibility(View.GONE);
+                            break;
 
-                    case READY:
-                        break;
+                        case READY:
+                            break;
 
-                    case STREAMING:
-                        recordingButton.setEnabled(true);
-                        recordingButtonLayout.setVisibility(View.VISIBLE);
-                        break;
+                        case STREAMING:
+                            recordingButton.setEnabled(true);
+                            recordingButtonLayout.setVisibility(View.VISIBLE);
+                            break;
 
-                    case CONNECTING:
-                        int currentOrientation = getResources().getConfiguration().orientation;
-                        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                        } else {
-                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-                        }
+                        case CONNECTING:
+                            int currentOrientation = getResources().getConfiguration().orientation;
+                            if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                            } else {
+                                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+                            }
 
-                        recordingButton.setEnabled(false);
-                        recordingButtonLayout.setVisibility(View.GONE);
-                        break;
+                            recordingButton.setEnabled(false);
+                            recordingButtonLayout.setVisibility(View.GONE);
+                            break;
 
-                    case SHUTDOWN:
-                        recordingButton.setEnabled(true);
-                        recordingButtonLayout.setVisibility(View.VISIBLE);
-                        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                        break;
+                        case SHUTDOWN:
+                            recordingButton.setEnabled(true);
+                            recordingButtonLayout.setVisibility(View.VISIBLE);
+                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                            break;
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private int getDeviceRotationDegrees() {

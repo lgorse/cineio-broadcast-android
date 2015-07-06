@@ -82,6 +82,22 @@ public class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
             Log.d(TAG, "renderer pausing -- releasing SurfaceTexture");
             mSurfaceTexture.release();
             mSurfaceTexture = null;
+
+            // TODO: this is a hack. Need to figure out how to stop streaming when going to background
+            switch (mRecordingStatus) {
+                case RECORDING_ON:
+                case RECORDING_RESUMED:
+                    // stop recording
+                    Log.d(TAG, "STOP recording");
+                    mVideoEncoder.stopRecording();
+                    mRecordingStatus = RECORDING_OFF;
+                    break;
+                case RECORDING_OFF:
+                    // yay
+                    break;
+                default:
+                    throw new RuntimeException("unknown status " + mRecordingStatus);
+            }
         }
         if (mFullScreen != null) {
             mFullScreen.release(false);     // assume the GLSurfaceView EGL context is about
